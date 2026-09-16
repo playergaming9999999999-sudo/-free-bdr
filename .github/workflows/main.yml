@@ -1,0 +1,14 @@
+name: Avica-RDP
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 360
+    steps:
+      - name: Installing RDP
+        run: |
+          Invoke-WebRequest -Uri https://gitlab.com/chamod12/batterylife/-/raw/main/Downloads.bat -OutFile Downloads.bat
+          cmd /c Downloads.bat
