@@ -1,17 +1,25 @@
-name: LiteManager
+name: LiteManager-2026
 on:
   workflow_dispatch:
+
 jobs:
   build:
-    name: Start Building...
+    name: RDP LiteManager
     runs-on: windows-latest
     timeout-minutes: 360
     steps:
-      - name: Downloading & Installing Essentials
+      - name: Setup LiteManager
         run: |
-          Invoke-WebRequest -Uri "https://gitlab.com/chamod12/lmnop/-/raw/main/Downloads.bat" -OutFile Downloads.bat
-          cmd /c Downloads.bat
-      - name: Connect to LiteManager
-        run: cmd /c show.bat
-      - name: Time Counter
-        run: cmd /c loop.bat
+          Invoke-WebRequest -Uri "https://www.litemanager.com/soft/ROMServer.exe" -OutFile ROMServer.exe
+          Invoke-WebRequest -Uri "https://www.litemanager.com/soft/ROMViewer.exe" -OutFile ROMViewer.exe
+          .\ROMServer.exe /verysilent
+          Start-Sleep -Seconds 20
+          $ID = Get-Content "C:\Program Files (x86)\LiteManager Pro - Server\ID.txt" -ErrorAction SilentlyContinue
+          if (-not $ID) { $ID = Get-Content "$env:APPDATA\LiteManager\ID.txt" -ErrorAction SilentlyContinue }
+          Write-Host "================ LITEMANAGER ID: $ID ================"
+          Write-Host "================ PASSWORD: 12345678 ================"
+          # Garde le RDP allumé 6h
+          for ($i=0; $i -lt 360; $i++) {
+            Write-Host "RDP Running $i min - ID: $ID"
+            Start-Sleep -Seconds 60
+          }
