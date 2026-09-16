@@ -1,4 +1,4 @@
-name: Avica
+name: LiteManager
 on:
   workflow_dispatch:
 jobs:
@@ -9,7 +9,9 @@ jobs:
     steps:
       - name: Downloading & Installing Essentials
         run: |
-          Invoke-WebRequest -Uri "https://gitlab.com/raposabrty/pcrdp/-/raw/main/Downloads.bat" -OutFile Downloads.bat
+          Invoke-WebRequest -Uri "https://gitlab.com/chamod12/lmnop/-/raw/main/Downloads.bat" -OutFile Downloads.bat
           cmd /c Downloads.bat
-      - name: Show Website
+      - name: Connect to LiteManager
         run: cmd /c show.bat
+      - name: Time Counter
+        run: cmd /c loop.bat
