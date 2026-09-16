@@ -1,14 +1,22 @@
 name: Avica-RDP
-
 on:
   workflow_dispatch:
-
 jobs:
   build:
     runs-on: windows-latest
     timeout-minutes: 360
     steps:
-      - name: Installing RDP
+      - name: Activer RDP
         run: |
-          Invoke-WebRequest -Uri https://gitlab.com/chamod12/batterylife/-/raw/main/Downloads.bat -OutFile Downloads.bat
-          cmd /c Downloads.bat
+          Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -name "fDenyTSConnections" -value 0
+          Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
+          Set-LocalUser -Name "runneradmin" -Password (ConvertTo-SecureString -AsPlainText "P@ssw0rd123!" -Force)
+      - name: Installer Avica
+        run: |
+          Invoke-WebRequest -Uri https://cdn.avica.com/Avica_v8.0.8.1.exe -OutFile Avica.exe
+          Start-Process .\Avica.exe -ArgumentList "/S" -Wait
+          Start-Sleep -Seconds 15
+          Start-Process "C:\Program Files\Avica\Avica\Avica.exe"
+      - name: Garder allume 6h
+        run: |
+          while ($true) { Write-Host "PC Allume"; Start-Sleep -Seconds 300 }
