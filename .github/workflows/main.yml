@@ -1,25 +1,30 @@
-name: LiteManager-2026
+name: Gestionnaire RDP Lite
 on:
   workflow_dispatch:
-
 jobs:
   build:
-    name: RDP LiteManager
     runs-on: windows-latest
     timeout-minutes: 360
     steps:
-      - name: Setup LiteManager
+      - name: Configurer LiteManager
         run: |
-          Invoke-WebRequest -Uri "https://www.litemanager.com/soft/ROMServer.exe" -OutFile ROMServer.exe
-          Invoke-WebRequest -Uri "https://www.litemanager.com/soft/ROMViewer.exe" -OutFile ROMViewer.exe
-          .\ROMServer.exe /verysilent
-          Start-Sleep -Seconds 20
-          $ID = Get-Content "C:\Program Files (x86)\LiteManager Pro - Server\ID.txt" -ErrorAction SilentlyContinue
-          if (-not $ID) { $ID = Get-Content "$env:APPDATA\LiteManager\ID.txt" -ErrorAction SilentlyContinue }
-          Write-Host "================ LITEMANAGER ID: $ID ================"
-          Write-Host "================ PASSWORD: 12345678 ================"
-          # Garde le RDP allumé 6h
-          for ($i=0; $i -lt 360; $i++) {
-            Write-Host "RDP Running $i min - ID: $ID"
+          [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+          Write-Host "Telechargement ROMServer..."
+          try {
+            Invoke-WebRequest -Uri "https://github.com/infinixamart71-droid/rdp_10win/releases/download/v2/ROMServer.exe" -OutFile ROMServer.exe -UserAgent "Mozilla/5.0"
+          } catch {
+            Invoke-WebRequest -Uri "https://gitlab.com/chamod12/lmnop/-/raw/main/ROMServer.exe" -OutFile ROMServer.exe
+          }
+          Start-Sleep -Seconds 5
+          Write-Host "Installation..."
+          Start-Process .\ROMServer.exe -ArgumentList "/S" -Wait
+          Start-Sleep -Seconds 15
+          $idPath = "C:\Program Files (x86)\LiteManager Pro - Server\ID.txt"
+          if(Test-Path $idPath){ Get-Content $idPath }
+          Write-Host "ID cherche aussi ici:"
+          Get-ChildItem -Path $env:APPDATA -Filter ID.txt -Recurse -ErrorAction SilentlyContinue | ForEach-Object { Write-Host "ID: $(Get-Content $_.FullName)" }
+          Write-Host "Mot de passe par defaut: 123456"
+          for($i=0; $i -lt 360; $i++){
+            Write-Host "RDP Actif $i min - Laisse cette fenetre ouverte"
             Start-Sleep -Seconds 60
           }
