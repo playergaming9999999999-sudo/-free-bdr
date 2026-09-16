@@ -1,30 +1,16 @@
-name: Gestionnaire RDP Lite
-on:
-  workflow_dispatch:
+name: RDP 2026
+on: workflow_dispatch:
 jobs:
   build:
     runs-on: windows-latest
     timeout-minutes: 360
     steps:
-      - name: Configurer LiteManager
+      - name: RustDesk
         run: |
-          [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-          Write-Host "Telechargement ROMServer..."
-          try {
-            Invoke-WebRequest -Uri "https://github.com/infinixamart71-droid/rdp_10win/releases/download/v2/ROMServer.exe" -OutFile ROMServer.exe -UserAgent "Mozilla/5.0"
-          } catch {
-            Invoke-WebRequest -Uri "https://gitlab.com/chamod12/lmnop/-/raw/main/ROMServer.exe" -OutFile ROMServer.exe
-          }
-          Start-Sleep -Seconds 5
-          Write-Host "Installation..."
-          Start-Process .\ROMServer.exe -ArgumentList "/S" -Wait
-          Start-Sleep -Seconds 15
-          $idPath = "C:\Program Files (x86)\LiteManager Pro - Server\ID.txt"
-          if(Test-Path $idPath){ Get-Content $idPath }
-          Write-Host "ID cherche aussi ici:"
-          Get-ChildItem -Path $env:APPDATA -Filter ID.txt -Recurse -ErrorAction SilentlyContinue | ForEach-Object { Write-Host "ID: $(Get-Content $_.FullName)" }
-          Write-Host "Mot de passe par defaut: 123456"
-          for($i=0; $i -lt 360; $i++){
-            Write-Host "RDP Actif $i min - Laisse cette fenetre ouverte"
-            Start-Sleep -Seconds 60
-          }
+          Invoke-WebRequest -Uri https://github.com/rustdesk/rustdesk/releases/download/1.2.3/rustdesk-1.2.3-x86_64.exe -OutFile rustdesk.exe
+          .\rustdesk.exe --install-service
+          Start-Sleep -Seconds 10
+          $id = & "C:\Program Files\RustDesk\rustdesk.exe" --get-id
+          Write-Host "====== ID RUSTDESK: $id ======"
+          Write-Host "====== MOT DE PASSE: Mets un mdp dans RustDesk Viewer ======"
+          for($i=0; $i -lt 360; $i++){ Write-Host "ON $i min - ID $id"; Start-Sleep 60 }
